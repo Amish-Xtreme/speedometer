@@ -1,0 +1,2015 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Supercar Instrument Cluster & Accelerator</title>
+    <style>
+/* ==========================================================================
+   Speedometer & Accelerator Dashboard Stylesheet
+   Supercar Dark Cockpit UI with 3D Physical Pedals
+   ========================================================================== */
+
+:root {
+    --bg-primary: #07090e;
+    --bg-card: rgba(15, 23, 42, 0.75);
+    --border-color: rgba(255, 255, 255, 0.1);
+    --accent-cyan: #00f0ff;
+    --accent-cyan-glow: rgba(0, 240, 255, 0.4);
+    --accent-red: #ff2a5f;
+    --accent-green: #10b981;
+    --accent-amber: #f59e0b;
+    --text-primary: #f8fafc;
+    --text-muted: #94a3b8;
+    --font-main: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+    --font-mono: 'SF Mono', 'Cascadia Code', 'Consolas', monospace;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+body {
+    background-color: var(--bg-primary);
+    background-image: 
+        radial-gradient(circle at 50% 15%, rgba(0, 240, 255, 0.08) 0%, transparent 60%),
+        radial-gradient(circle at 50% 90%, rgba(255, 42, 95, 0.06) 0%, transparent 50%),
+        repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.015) 0, rgba(255, 255, 255, 0.015) 1px, transparent 0, transparent 4px);
+    color: var(--text-primary);
+    font-family: var(--font-main);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow-x: hidden;
+    padding-bottom: 2rem;
+}
+
+/* Header & Top Bar */
+.top-nav {
+    width: 100%;
+    max-width: 1200px;
+    padding: 1rem 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border-color);
+    backdrop-filter: blur(10px);
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.brand-icon {
+    width: 28px;
+    height: 28px;
+    color: var(--accent-cyan);
+    filter: drop-shadow(0 0 8px var(--accent-cyan-glow));
+}
+
+.brand-title {
+    font-size: 1.25rem;
+    font-weight: 800;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    background: linear-gradient(135deg, #ffffff 40%, var(--accent-cyan) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.top-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    flex-wrap: wrap;
+}
+
+/* Common Button & Pill Styles */
+.btn {
+    background: rgba(30, 41, 59, 0.6);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    font-family: var(--font-main);
+    font-size: 0.82rem;
+    font-weight: 600;
+    padding: 0.45rem 0.9rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.btn:hover {
+    background: rgba(51, 65, 85, 0.8);
+    border-color: rgba(255, 255, 255, 0.25);
+    transform: translateY(-1px);
+}
+
+.btn:active {
+    transform: translateY(0);
+}
+
+.btn.active {
+    background: rgba(0, 240, 255, 0.15);
+    border-color: var(--accent-cyan);
+    color: var(--accent-cyan);
+    box-shadow: 0 0 14px var(--accent-cyan-glow);
+}
+
+.select-group {
+    display: inline-flex;
+    background: rgba(15, 23, 42, 0.8);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 2px;
+}
+
+.select-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    font-size: 0.78rem;
+    font-weight: 600;
+    padding: 0.35rem 0.75rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.select-btn.active {
+    background: var(--accent-cyan);
+    color: #000;
+    font-weight: 700;
+    box-shadow: 0 0 10px var(--accent-cyan-glow);
+}
+
+/* Main Dashboard Area */
+.dashboard-container {
+    width: 100%;
+    max-width: 1200px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1.5rem 1rem;
+    gap: 1.5rem;
+}
+
+/* Cluster Box */
+.cluster-wrapper {
+    width: 100%;
+    background: radial-gradient(ellipse at center, rgba(15, 23, 42, 0.8) 0%, rgba(5, 8, 14, 0.95) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 24px;
+    padding: 1rem;
+    box-shadow: 
+        0 20px 40px -15px rgba(0, 0, 0, 0.8),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    position: relative;
+    overflow: hidden;
+}
+
+.cluster-wrapper::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 10%;
+    right: 10%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--accent-cyan), transparent);
+    opacity: 0.5;
+}
+
+#gaugeCanvas {
+    display: block;
+    width: 100%;
+    height: auto;
+    margin: 0 auto;
+}
+
+/* Gear Selector Bar */
+.gear-selector-bar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.75rem;
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 0.5rem 1.25rem;
+    backdrop-filter: blur(8px);
+}
+
+.gear-label {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    font-weight: 700;
+    letter-spacing: 1px;
+    margin-right: 0.25rem;
+}
+
+.gear-btn {
+    width: 38px;
+    height: 38px;
+    border-radius: 8px;
+    background: rgba(30, 41, 59, 0.6);
+    border: 1px solid var(--border-color);
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.gear-btn:hover {
+    border-color: rgba(255, 255, 255, 0.3);
+    color: var(--text-primary);
+}
+
+.gear-btn.active {
+    background: var(--accent-cyan);
+    color: #000;
+    border-color: var(--accent-cyan);
+    box-shadow: 0 0 15px var(--accent-cyan-glow);
+}
+
+/* Controls Cockpit (Pedals & Sliders) */
+.cockpit-panel {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 2rem;
+    align-items: center;
+    background: rgba(15, 23, 42, 0.5);
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    padding: 1.5rem 2rem;
+    backdrop-filter: blur(12px);
+}
+
+/* Continuous Throttle Slider */
+.slider-control-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.card-title {
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.slider-container {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.throttle-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 8px;
+    background: #1e293b;
+    border-radius: 6px;
+    outline: none;
+    transition: background 0.2s;
+    cursor: pointer;
+}
+
+.throttle-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--accent-cyan);
+    box-shadow: 0 0 10px var(--accent-cyan-glow);
+    cursor: pointer;
+    transition: transform 0.1s, box-shadow 0.1s;
+}
+
+.throttle-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.15);
+    box-shadow: 0 0 15px var(--accent-cyan);
+}
+
+.slider-val-badge {
+    font-family: var(--font-mono);
+    font-size: 0.95rem;
+    font-weight: 700;
+    min-width: 46px;
+    text-align: right;
+    color: var(--accent-cyan);
+}
+
+/* 3D Physical Pedals Container */
+.pedals-assembly {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    gap: 2.5rem;
+    perspective: 800px;
+    padding: 0.5rem 1rem;
+}
+
+/* Individual Pedal Styling */
+.pedal-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.pedal-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+}
+
+.pedal-key-hint {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: var(--text-primary);
+}
+
+/* 3D Pedal Frame */
+.pedal {
+    position: relative;
+    cursor: pointer;
+    transform-style: preserve-3d;
+    transform-origin: top center;
+    transition: transform 0.08s ease-out, filter 0.15s ease;
+    outline: none;
+    touch-action: none;
+}
+
+/* Brake Pedal: Wider & Shorter */
+.pedal-brake {
+    width: 84px;
+    height: 120px;
+    background: linear-gradient(180deg, #334155 0%, #1e293b 100%);
+    border-radius: 12px;
+    border: 2px solid #64748b;
+    box-shadow: 
+        0 14px 25px rgba(0, 0, 0, 0.7),
+        inset 0 2px 3px rgba(255, 255, 255, 0.3),
+        inset 0 -4px 6px rgba(0, 0, 0, 0.6);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+    padding: 12px 6px;
+}
+
+.pedal-brake .rubber-rib {
+    width: 82%;
+    height: 8px;
+    background: #0f172a;
+    border-radius: 4px;
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.8), 0 1px 1px rgba(255,255,255,0.1);
+}
+
+/* Gas / Accelerator Pedal: Taller & Sleeker */
+.pedal-gas {
+    width: 68px;
+    height: 154px;
+    background: linear-gradient(180deg, #475569 0%, #1e293b 80%, #0f172a 100%);
+    border-radius: 14px;
+    border: 2px solid #00f0ff88;
+    box-shadow: 
+        0 14px 25px rgba(0, 0, 0, 0.7),
+        inset 0 2px 3px rgba(255, 255, 255, 0.35),
+        inset 0 -4px 6px rgba(0, 0, 0, 0.6);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+    padding: 16px 8px;
+}
+
+.pedal-gas .rubber-dot-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px 12px;
+}
+
+.pedal-gas .rubber-dot {
+    width: 14px;
+    height: 14px;
+    background: #090e17;
+    border-radius: 50%;
+    box-shadow: inset 0 2px 3px rgba(0,0,0,0.9), 0 1px 1px rgba(255,255,255,0.15);
+}
+
+/* 3D Pressed State (Angular tilt away from camera) */
+.pedal.pressed {
+    transform: rotateX(24deg) translateY(6px) scale(0.96);
+}
+
+.pedal-gas.pressed {
+    border-color: var(--accent-cyan);
+    box-shadow: 
+        0 6px 15px rgba(0, 0, 0, 0.8),
+        0 0 24px var(--accent-cyan-glow);
+}
+
+.pedal-brake.pressed {
+    border-color: var(--accent-red);
+    box-shadow: 
+        0 6px 15px rgba(0, 0, 0, 0.8),
+        0 0 24px rgba(255, 42, 95, 0.5);
+}
+
+/* Action Controls (Cruise, Trip Reset) */
+.cockpit-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+    justify-content: center;
+}
+
+/* Key Guide & Instructions Box */
+.guide-card {
+    width: 100%;
+    max-width: 1200px;
+    background: rgba(15, 23, 42, 0.4);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 1rem 1.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    align-items: center;
+    gap: 1rem;
+    font-size: 0.82rem;
+    color: var(--text-muted);
+}
+
+.guide-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.guide-key {
+    background: rgba(30, 41, 59, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 2px 0 rgba(0,0,0,0.5);
+    color: var(--accent-cyan);
+    font-family: var(--font-mono);
+    font-weight: 700;
+    padding: 0.2rem 0.55rem;
+    border-radius: 6px;
+}
+
+/* Responsive Breakpoints */
+@media (max-width: 900px) {
+    .cockpit-panel {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+    
+    .slider-control-card, .cockpit-actions {
+        max-width: 420px;
+        margin: 0 auto;
+        width: 100%;
+    }
+}
+
+@media (max-width: 600px) {
+    .top-nav {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .pedals-assembly {
+        gap: 1.5rem;
+    }
+    
+    .pedal-gas {
+        width: 58px;
+        height: 130px;
+    }
+    
+    .pedal-brake {
+        width: 70px;
+        height: 105px;
+    }
+}
+
+</style>
+</head>
+<body>
+
+    <!-- Header Navigation -->
+    <header class="top-nav">
+        <div class="brand">
+            <svg class="brand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polygon points="12 6 12 12 16 14"></polygon>
+            </svg>
+            <span class="brand-title">HyperDrive Cluster</span>
+        </div>
+
+        <div class="top-controls">
+            <!-- Drive Modes -->
+            <div class="select-group" id="driveModeGroup">
+                <button class="select-btn" data-mode="eco">ECO</button>
+                <button class="select-btn" data-mode="comfort">COMFORT</button>
+                <button class="select-btn active" data-mode="sport">SPORT</button>
+                <button class="select-btn" data-mode="track">TRACK</button>
+            </div>
+
+            <!-- Units Toggle -->
+            <div class="select-group" id="unitGroup">
+                <button class="select-btn active" data-unit="kmh">KM/H</button>
+                <button class="select-btn" data-unit="mph">MPH</button>
+            </div>
+
+            <!-- Theme Picker -->
+            <div class="select-group" id="themeGroup">
+                <button class="select-btn active" data-theme="neon">NEON</button>
+                <button class="select-btn" data-theme="classic">CLASSIC</button>
+                <button class="select-btn" data-theme="stealth">STEALTH</button>
+            </div>
+
+            <!-- Sound FX Toggle -->
+            <button class="btn" id="soundBtn" title="Toggle Engine Audio">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                    <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                </svg>
+                <span id="soundLabel">Sound: OFF</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Dashboard Container -->
+    <main class="dashboard-container">
+
+        <!-- Gauges Cluster Display -->
+        <div class="cluster-wrapper">
+            <canvas id="gaugeCanvas"></canvas>
+        </div>
+
+        <!-- Transmission Gear Mode Bar -->
+        <div class="gear-selector-bar">
+            <span class="gear-label">Transmission:</span>
+            <button class="gear-btn" data-gear="P">P</button>
+            <button class="gear-btn" data-gear="R">R</button>
+            <button class="gear-btn" data-gear="N">N</button>
+            <button class="gear-btn active" data-gear="D">D</button>
+        </div>
+
+        <!-- Cockpit Controls Area -->
+        <div class="cockpit-panel">
+            
+            <!-- Left: Throttle Slider -->
+            <div class="slider-control-card">
+                <div class="card-title">
+                    <span>Continuous Throttle</span>
+                    <span class="slider-val-badge" id="throttleVal">0%</span>
+                </div>
+                <div class="slider-container">
+                    <input type="range" min="0" max="100" value="0" class="throttle-slider" id="throttleSlider">
+                </div>
+                <span style="font-size: 0.72rem; color: var(--text-muted);">Hold gas pedal or drag slider to set steady throttle</span>
+            </div>
+
+            <!-- Center: 3D Interactive Pedals -->
+            <div class="pedals-assembly">
+                <!-- Brake Pedal -->
+                <div class="pedal-box">
+                    <span class="pedal-label">Brake</span>
+                    <div class="pedal pedal-brake" id="brakePedal" role="button" tabindex="0" title="Click & hold to brake">
+                        <div class="rubber-rib"></div>
+                        <div class="rubber-rib"></div>
+                        <div class="rubber-rib"></div>
+                        <div class="rubber-rib"></div>
+                    </div>
+                    <span class="pedal-key-hint">[S] or [↓]</span>
+                </div>
+
+                <!-- Accelerator / Gas Pedal -->
+                <div class="pedal-box">
+                    <span class="pedal-label" style="color: var(--accent-cyan);">Accelerator</span>
+                    <div class="pedal pedal-gas" id="gasPedal" role="button" tabindex="0" title="Click & hold to accelerate">
+                        <div class="rubber-dot-grid">
+                            <div class="rubber-dot"></div><div class="rubber-dot"></div>
+                            <div class="rubber-dot"></div><div class="rubber-dot"></div>
+                            <div class="rubber-dot"></div><div class="rubber-dot"></div>
+                            <div class="rubber-dot"></div><div class="rubber-dot"></div>
+                            <div class="rubber-dot"></div><div class="rubber-dot"></div>
+                        </div>
+                    </div>
+                    <span class="pedal-key-hint">[SPACE] or [W] or [↑]</span>
+                </div>
+            </div>
+
+            <!-- Right: Quick Actions -->
+            <div class="cockpit-actions">
+                <button class="btn" id="cruiseBtn" style="width: 100%; justify-content: center;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="8" x2="12" y2="12"></line>
+                        <line x1="12" y1="12" x2="16" y2="12"></line>
+                    </svg>
+                    <span>Cruise Control [C]</span>
+                </button>
+                <button class="btn" id="resetTripBtn" style="width: 100%; justify-content: center;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="1 4 1 10 7 10"></polyline>
+                        <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+                    </svg>
+                    <span>Reset Trip & Max</span>
+                </button>
+            </div>
+
+        </div>
+
+        <!-- Keyboard Controls Cheatsheet -->
+        <div class="guide-card">
+            <div class="guide-item">
+                <span class="guide-key">SPACE / W / ↑</span>
+                <span>Accelerate (Hold)</span>
+            </div>
+            <div class="guide-item">
+                <span class="guide-key">S / ↓</span>
+                <span>Brake</span>
+            </div>
+            <div class="guide-item">
+                <span class="guide-key">C</span>
+                <span>Cruise Lock</span>
+            </div>
+            <div class="guide-item">
+                <span class="guide-key">D / N / R / P</span>
+                <span>Shift Transmission</span>
+            </div>
+            <div class="guide-item">
+                <span class="guide-key">1 - 4</span>
+                <span>Drive Modes</span>
+            </div>
+            <div class="guide-item">
+                <span class="guide-key">M</span>
+                <span>Mute / Sound</span>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Inlined Single-File Scripts -->
+    <script>
+/**
+ * Vehicle Physics Engine
+ * Handles engine RPM, 7-speed automatic transmission, throttle response,
+ * aerodynamic drag, braking dynamics, odometer, and G-force calculations.
+ */
+
+class VehiclePhysics {
+    constructor() {
+        // State variables
+        this.speed = 0;             // Current speed in km/h
+        this.rpm = 850;             // Engine RPM
+        this.targetRpm = 850;
+        this.idleRpm = 850;
+        this.redlineRpm = 7500;
+        this.maxRpm = 8200;
+        this.gear = 1;              // 1 to 7
+        this.gearMode = 'D';        // 'P', 'R', 'N', 'D'
+        this.isShifting = false;
+        this.shiftTimer = 0;
+        this.revLimiterActive = false;
+        
+        // Input states (0.0 to 1.0)
+        this.throttle = 0;          // Raw input
+        this.effectiveThrottle = 0; // Smoothed fly-by-wire throttle
+        this.brake = 0;             // 0.0 to 1.0
+        this.cruiseControl = false;
+        this.cruiseSpeed = 0;
+        
+        // Performance metrics
+        this.odometer = 12450.0;    // Total km
+        this.tripMeter = 0.0;       // Trip km
+        this.maxSpeed = 0;          // Record top speed
+        this.gForce = 0;            // Longitudinal G-force
+        this.prevSpeed = 0;
+        
+        // Drive mode configurations
+        this.driveModes = {
+            eco: {
+                name: 'ECO',
+                powerMult: 0.72,
+                throttleResponse: 2.5,
+                shiftUpRpm: 3400,
+                shiftDownRpm: 1500,
+                topSpeed: 190,
+                accentColor: '#10b981'
+            },
+            comfort: {
+                name: 'COMFORT',
+                powerMult: 1.0,
+                throttleResponse: 3.8,
+                shiftUpRpm: 4600,
+                shiftDownRpm: 1800,
+                topSpeed: 245,
+                accentColor: '#3b82f6'
+            },
+            sport: {
+                name: 'SPORT',
+                powerMult: 1.35,
+                throttleResponse: 6.0,
+                shiftUpRpm: 6800,
+                shiftDownRpm: 2600,
+                topSpeed: 285,
+                accentColor: '#f59e0b'
+            },
+            track: {
+                name: 'TRACK',
+                powerMult: 1.75,
+                throttleResponse: 9.0,
+                shiftUpRpm: 7400,
+                shiftDownRpm: 3200,
+                topSpeed: 320,
+                accentColor: '#ef4444'
+            }
+        };
+        
+        this.currentModeKey = 'sport';
+        
+        // Gear speed mapping (km/h per 1000 RPM in each gear)
+        this.gearRatios = [
+            7.5,   // 1st gear: 7500 RPM ≈ 56 km/h
+            13.2,  // 2nd gear: 7500 RPM ≈ 99 km/h
+            19.8,  // 3rd gear: 7500 RPM ≈ 148 km/h
+            27.5,  // 4th gear: 7500 RPM ≈ 206 km/h
+            35.0,  // 5th gear: 7500 RPM ≈ 262 km/h
+            42.0,  // 6th gear: 7500 RPM ≈ 315 km/h
+            48.5   // 7th gear: cruising overdrive
+        ];
+    }
+    
+    setDriveMode(modeKey) {
+        if (this.driveModes[modeKey]) {
+            this.currentModeKey = modeKey;
+        }
+    }
+    
+    getDriveMode() {
+        return this.driveModes[this.currentModeKey];
+    }
+    
+    toggleCruiseControl() {
+        if (this.speed > 25 && this.gearMode === 'D') {
+            this.cruiseControl = !this.cruiseControl;
+            if (this.cruiseControl) {
+                this.cruiseSpeed = Math.round(this.speed);
+            }
+        } else {
+            this.cruiseControl = false;
+        }
+        return this.cruiseControl;
+    }
+    
+    resetTrip() {
+        this.tripMeter = 0.0;
+        this.maxSpeed = 0.0;
+    }
+    
+    update(dt) {
+        const mode = this.getDriveMode();
+        
+        // Cruise control adjustment
+        if (this.cruiseControl) {
+            if (this.brake > 0.05 || this.gearMode !== 'D') {
+                this.cruiseControl = false;
+            } else if (this.throttle > 0.1) {
+                // Throttle override without canceling cruise
+            } else {
+                // Auto throttle towards cruise speed
+                const speedDiff = this.cruiseSpeed - this.speed;
+                if (speedDiff > 0.5) {
+                    this.throttle = Math.min(1.0, speedDiff * 0.12);
+                } else if (speedDiff < -1.5) {
+                    this.throttle = 0;
+                    this.brake = Math.min(0.3, Math.abs(speedDiff) * 0.08);
+                } else {
+                    this.throttle = 0.15; // Maintain speed throttle
+                }
+            }
+        }
+        
+        // Fly-by-wire throttle response smoothing
+        const throttleDelta = this.throttle - this.effectiveThrottle;
+        this.effectiveThrottle += throttleDelta * Math.min(1.0, dt * mode.throttleResponse);
+        
+        // Handle shifting delay
+        if (this.isShifting) {
+            this.shiftTimer -= dt;
+            if (this.shiftTimer <= 0) {
+                this.isShifting = false;
+            }
+        }
+        
+        // Neutral or Park revving behavior
+        if (this.gearMode === 'N' || this.gearMode === 'P') {
+            const target = this.idleRpm + this.effectiveThrottle * (this.maxRpm - this.idleRpm);
+            if (target > this.redlineRpm) {
+                // Rev limiter bouncing
+                if (Math.random() > 0.3) {
+                    this.rpm = this.redlineRpm + (Math.random() * 250 - 120);
+                    this.revLimiterActive = true;
+                } else {
+                    this.rpm = this.redlineRpm - 400;
+                    this.revLimiterActive = false;
+                }
+            } else {
+                this.rpm += (target - this.rpm) * Math.min(1.0, dt * 10.0);
+                this.revLimiterActive = false;
+            }
+            
+            // Decelerate speed gradually in N
+            this.speed = Math.max(0, this.speed - (5.0 + 0.005 * this.speed * this.speed) * dt);
+        }
+        // Drive mode physics
+        else if (this.gearMode === 'D') {
+            const currentRatio = this.gearRatios[this.gear - 1];
+            
+            // Theoretical mechanical RPM based on wheel speed
+            const mechanicalRpm = (this.speed / currentRatio) * 1000;
+            
+            // Automatic Transmission Shift Logic
+            if (!this.isShifting) {
+                // Upshift check
+                if (this.rpm >= mode.shiftUpRpm && this.gear < 7) {
+                    this.gear++;
+                    this.isShifting = true;
+                    this.shiftTimer = 0.14; // Fast dual-clutch shift time
+                }
+                // Downshift check (kickdown on high throttle or low speed)
+                else if ((this.rpm <= mode.shiftDownRpm || (this.effectiveThrottle > 0.85 && this.rpm < 5200)) && this.gear > 1) {
+                    const lowerGearRpm = (this.speed / this.gearRatios[this.gear - 2]) * 1000;
+                    if (lowerGearRpm < mode.shiftUpRpm - 400) {
+                        this.gear--;
+                        this.isShifting = true;
+                        this.shiftTimer = 0.18; // Downshift throttle blip
+                    }
+                }
+            }
+            
+            // RPM calculation with torque converter slip at low speeds
+            if (this.isShifting) {
+                // Clutch disengaged momentarily
+                this.rpm += (this.idleRpm + this.effectiveThrottle * 3000 - this.rpm) * dt * 8;
+            } else {
+                const clutchSlipMinRpm = this.idleRpm + this.effectiveThrottle * 1600;
+                this.rpm = Math.max(mechanicalRpm, clutchSlipMinRpm);
+                
+                // Redline limiter check in top gear or hard acceleration
+                if (this.rpm >= this.redlineRpm) {
+                    if (Math.random() > 0.35) {
+                        this.rpm = this.redlineRpm + (Math.random() * 150 - 50);
+                        this.revLimiterActive = true;
+                    } else {
+                        this.rpm = this.redlineRpm - 300;
+                        this.revLimiterActive = false;
+                    }
+                } else {
+                    this.revLimiterActive = false;
+                }
+            }
+            
+            // Acceleration force
+            // Torque curve factor peaking around 4500 RPM
+            const rpmNorm = (this.rpm - 1000) / 6000;
+            const torqueFactor = Math.max(0.4, Math.sin(Math.min(Math.PI, Math.max(0, rpmNorm * Math.PI))));
+            
+            // Power output based on gear ratio and mode
+            const gearTractionFactor = Math.max(0.35, 1.0 - (this.gear - 1) * 0.09);
+            const driveForce = this.revLimiterActive ? 0 : 
+                this.effectiveThrottle * 58.0 * mode.powerMult * torqueFactor * gearTractionFactor;
+            
+            // Aerodynamic drag force: proportional to speed squared
+            const dragForce = 0.00062 * this.speed * this.speed;
+            
+            // Rolling resistance force
+            const rollingResistance = this.speed > 0.1 ? 1.8 : 0;
+            
+            // Engine compression braking when off throttle
+            const engineBrakeForce = (1.0 - this.effectiveThrottle) * (2.8 + (this.rpm / 1000) * 0.9);
+            
+            // Mechanical foot brake force
+            const brakeForce = this.brake * 72.0;
+            
+            // Net acceleration (km/h per second)
+            const netAcceleration = driveForce - dragForce - rollingResistance - engineBrakeForce - brakeForce;
+            
+            // Update speed
+            this.speed += netAcceleration * dt;
+            
+            // Top speed cap per drive mode
+            if (this.speed > mode.topSpeed) {
+                this.speed = mode.topSpeed;
+            }
+            if (this.speed < 0) {
+                this.speed = 0;
+            }
+        }
+        // Reverse mode
+        else if (this.gearMode === 'R') {
+            const revRatio = 7.0;
+            const targetSpeed = this.effectiveThrottle * 45;
+            this.speed = Math.max(0, Math.min(targetSpeed, this.speed + (this.effectiveThrottle * 20 - this.brake * 50 - 2.0) * dt));
+            this.rpm = Math.max(this.idleRpm, this.idleRpm + (this.speed / revRatio) * 600 + this.effectiveThrottle * 1000);
+        }
+        
+        // Calculate Longitudinal G-force
+        const speedMps = (this.speed * 1000) / 3600;
+        const prevSpeedMps = (this.prevSpeed * 1000) / 3600;
+        const instantG = (speedMps - prevSpeedMps) / (Math.max(0.001, dt) * 9.81);
+        this.gForce += (instantG - this.gForce) * Math.min(1.0, dt * 6.0); // smooth G-meter
+        this.prevSpeed = this.speed;
+        
+        // Update top speed record
+        if (this.speed > this.maxSpeed) {
+            this.maxSpeed = this.speed;
+        }
+        
+        // Update distance / odometer
+        const distanceDeltaKm = (this.speed * dt) / 3600;
+        this.odometer += distanceDeltaKm;
+        this.tripMeter += distanceDeltaKm;
+    }
+}
+
+// Export for module or global browser context
+if (typeof window !== 'undefined') {
+    window.VehiclePhysics = VehiclePhysics;
+}
+
+
+/**
+ * Engine Sound Synthesizer using Web Audio API
+ * Generates procedural V8 exhaust growl, RPM pitch shifting,
+ * throttle resonance, and rev-limiter pops without any audio sample dependencies.
+ */
+
+class SoundEngine {
+    constructor() {
+        this.ctx = null;
+        this.enabled = false;
+        this.masterGain = null;
+        
+        // Synth components
+        this.osc1 = null;
+        this.osc2 = null;
+        this.subOsc = null;
+        this.filter = null;
+        this.gainNode = null;
+        this.distortion = null;
+        
+        // State tracking
+        this.lastRevLimiterState = false;
+    }
+    
+    initAudio() {
+        if (this.ctx) return;
+        try {
+            const AudioContext = window.AudioContext || window.webkitAudioContext;
+            this.ctx = new AudioContext();
+            
+            // Master volume
+            this.masterGain = this.ctx.createGain();
+            this.masterGain.gain.setValueAtTime(0.35, this.ctx.currentTime);
+            this.masterGain.connect(this.ctx.destination);
+            
+            // Main lowpass filter (throttle resonance)
+            this.filter = this.ctx.createBiquadFilter();
+            this.filter.type = 'lowpass';
+            this.filter.frequency.setValueAtTime(300, this.ctx.currentTime);
+            this.filter.Q.setValueAtTime(3.5, this.ctx.currentTime);
+            
+            // Subtle distortion for engine grittiness
+            this.distortion = this.ctx.createWaveShaper();
+            this.distortion.curve = this.makeDistortionCurve(18);
+            this.distortion.oversample = '2x';
+            
+            // Main oscillators (V8 firing order simulation)
+            this.osc1 = this.ctx.createOscillator();
+            this.osc1.type = 'sawtooth';
+            this.osc1.frequency.setValueAtTime(55, this.ctx.currentTime);
+            
+            this.osc2 = this.ctx.createOscillator();
+            this.osc2.type = 'triangle';
+            this.osc2.frequency.setValueAtTime(110, this.ctx.currentTime);
+            
+            // Sub-harmonic bass oscillator
+            this.subOsc = this.ctx.createOscillator();
+            this.subOsc.type = 'sine';
+            this.subOsc.frequency.setValueAtTime(27.5, this.ctx.currentTime);
+            
+            // Dynamic engine gain
+            this.gainNode = this.ctx.createGain();
+            this.gainNode.gain.setValueAtTime(0.0, this.ctx.currentTime);
+            
+            // Wiring
+            this.osc1.connect(this.distortion);
+            this.osc2.connect(this.distortion);
+            this.subOsc.connect(this.filter);
+            
+            this.distortion.connect(this.filter);
+            this.filter.connect(this.gainNode);
+            this.gainNode.connect(this.masterGain);
+            
+            this.osc1.start();
+            this.osc2.start();
+            this.subOsc.start();
+        } catch (e) {
+            console.warn('Web Audio API not supported or blocked:', e);
+        }
+    }
+    
+    makeDistortionCurve(amount) {
+        const k = typeof amount === 'number' ? amount : 20;
+        const n_samples = 44100;
+        const curve = new Float32Array(n_samples);
+        const deg = Math.PI / 180;
+        for (let i = 0; i < n_samples; ++i) {
+            const x = (i * 2) / n_samples - 1;
+            curve[i] = ((3 + k) * x * 20 * deg) / (Math.PI + k * Math.abs(x));
+        }
+        return curve;
+    }
+    
+    toggle() {
+        if (!this.ctx) {
+            this.initAudio();
+        }
+        if (this.ctx && this.ctx.state === 'suspended') {
+            this.ctx.resume();
+        }
+        this.enabled = !this.enabled;
+        if (!this.enabled && this.gainNode) {
+            this.gainNode.gain.setTargetAtTime(0, this.ctx.currentTime, 0.05);
+        }
+        return this.enabled;
+    }
+    
+    update(physics) {
+        if (!this.enabled || !this.ctx || this.ctx.state !== 'running') return;
+        
+        const now = this.ctx.currentTime;
+        const rpm = Math.max(800, physics.rpm);
+        const throttle = physics.effectiveThrottle;
+        
+        // V8 4-stroke firing frequency: (RPM / 60) * 4 firing pulses/sec
+        const baseFreq = (rpm / 60) * 4.0;
+        
+        // Update oscillator frequencies
+        this.osc1.frequency.setTargetAtTime(baseFreq, now, 0.03);
+        this.osc2.frequency.setTargetAtTime(baseFreq * 1.5, now, 0.03);
+        this.subOsc.frequency.setTargetAtTime(baseFreq * 0.5, now, 0.03);
+        
+        // Throttle resonance: opening the throttle opens the filter intake wide
+        const filterCutoff = 280 + (rpm / 8000) * 1600 + throttle * 2800;
+        this.filter.frequency.setTargetAtTime(filterCutoff, now, 0.04);
+        
+        // Volume dynamic: louder at higher RPM and under throttle
+        const targetGain = 0.15 + (rpm / 8000) * 0.25 + throttle * 0.35;
+        this.gainNode.gain.setTargetAtTime(targetGain, now, 0.04);
+        
+        // Rev limiter exhaust pop
+        if (physics.revLimiterActive && !this.lastRevLimiterState) {
+            this.triggerBackfirePop();
+        }
+        this.lastRevLimiterState = physics.revLimiterActive;
+    }
+    
+    triggerBackfirePop() {
+        if (!this.ctx || !this.enabled) return;
+        try {
+            const now = this.ctx.currentTime;
+            // Short burst of filtered white noise for exhaust pop
+            const bufferSize = this.ctx.sampleRate * 0.08;
+            const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+            const data = buffer.getChannelData(0);
+            for (let i = 0; i < bufferSize; i++) {
+                data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufferSize * 0.25));
+            }
+            const noise = this.ctx.createBufferSource();
+            noise.buffer = buffer;
+            
+            const popFilter = this.ctx.createBiquadFilter();
+            popFilter.type = 'bandpass';
+            popFilter.frequency.setValueAtTime(450 + Math.random() * 300, now);
+            popFilter.Q.setValueAtTime(1.5, now);
+            
+            const popGain = this.ctx.createGain();
+            popGain.gain.setValueAtTime(0.5, now);
+            popGain.gain.exponentialRampToValueAtTime(0.01, now + 0.08);
+            
+            noise.connect(popFilter);
+            popFilter.connect(popGain);
+            popGain.connect(this.masterGain);
+            
+            noise.start(now);
+            noise.stop(now + 0.08);
+        } catch (e) {
+            // Ignore sound error
+        }
+    }
+}
+
+if (typeof window !== 'undefined') {
+    window.SoundEngine = SoundEngine;
+}
+
+
+/**
+ * High-Precision Canvas Instrument Cluster Renderer
+ * Renders Speedometer, Tachometer (RPM), digital HUD, LED arcs,
+ * glowing needles, and dynamic telemetry.
+ */
+
+class GaugeCluster {
+    constructor(canvas) {
+        this.canvas = canvas;
+        this.ctx = canvas.getContext('2d');
+        this.unit = 'kmh'; // 'kmh' or 'mph'
+        this.theme = 'neon'; // 'neon', 'classic', 'stealth'
+        
+        // Needle smoothing
+        this.smoothSpeed = 0;
+        this.smoothRpm = 850;
+        
+        // Setup Retina scaling
+        this.resize();
+        window.addEventListener('resize', () => this.resize());
+    }
+    
+    setUnit(unit) {
+        this.unit = unit;
+    }
+    
+    setTheme(theme) {
+        this.theme = theme;
+    }
+    
+    resize() {
+        const rect = this.canvas.parentElement.getBoundingClientRect();
+        this.dpr = window.devicePixelRatio || 1;
+        this.width = rect.width;
+        // Maintain a 16:9 or 2:1 widescreen automotive cluster aspect ratio
+        this.height = Math.min(rect.width * 0.52, 540);
+        
+        this.canvas.width = this.width * this.dpr;
+        this.canvas.height = this.height * this.dpr;
+        this.canvas.style.width = `${this.width}px`;
+        this.canvas.style.height = `${this.height}px`;
+    }
+    
+    getThemeColors() {
+        if (this.theme === 'classic') {
+            return {
+                bg: '#0c0f12',
+                dialBg: '#151921',
+                rimOuter: '#3a4454',
+                rimInner: '#1e2430',
+                tickMajor: '#ffffff',
+                tickMinor: '#718096',
+                text: '#e2e8f0',
+                accent: '#f59e0b',       // Amber needle
+                needleGlow: 'rgba(245, 158, 11, 0.45)',
+                redline: '#ef4444',
+                hudBg: 'rgba(15, 23, 42, 0.8)',
+                arcTrack: '#1e293b'
+            };
+        } else if (this.theme === 'stealth') {
+            return {
+                bg: '#050709',
+                dialBg: '#0e131a',
+                rimOuter: '#27313f',
+                rimInner: '#121820',
+                tickMajor: '#e2e8f0',
+                tickMinor: '#475569',
+                text: '#f8fafc',
+                accent: '#38bdf8',       // Ice Blue
+                needleGlow: 'rgba(56, 189, 248, 0.45)',
+                redline: '#f43f5e',
+                hudBg: 'rgba(14, 19, 26, 0.85)',
+                arcTrack: '#1e293b'
+            };
+        }
+        // Default 'neon'
+        return {
+            bg: '#05070b',
+            dialBg: '#090e17',
+            rimOuter: '#00f0ff',
+            rimInner: '#0b192c',
+            tickMajor: '#e0f2fe',
+            tickMinor: '#0284c7',
+            text: '#ffffff',
+            accent: '#00f0ff',           // Cyber Cyan
+            needleGlow: 'rgba(0, 240, 255, 0.65)',
+            redline: '#ff0055',
+            hudBg: 'rgba(5, 11, 22, 0.85)',
+            arcTrack: 'rgba(0, 240, 255, 0.12)'
+        };
+    }
+    
+    render(physics) {
+        const ctx = this.ctx;
+        const w = this.width;
+        const h = this.height;
+        const colors = this.getThemeColors();
+        
+        ctx.save();
+        ctx.scale(this.dpr, this.dpr);
+        
+        // Smooth needle movement (spring-like natural lag)
+        this.smoothSpeed += (physics.speed - this.smoothSpeed) * 0.22;
+        this.smoothRpm += (physics.rpm - this.smoothRpm) * 0.25;
+        
+        // Clear background
+        ctx.clearRect(0, 0, w, h);
+        
+        // Gauge geometries
+        const isMobile = w < 680;
+        let rpmCenter, speedCenter, radius;
+        
+        if (isMobile) {
+            // Stacked or single prominent cluster on small mobile screens
+            radius = Math.min(w * 0.44, h * 0.65);
+            speedCenter = { x: w * 0.5, y: h * 0.58 };
+            rpmCenter = { x: w * 0.5, y: h * 0.58 };
+        } else {
+            radius = Math.min(w * 0.24, h * 0.42);
+            rpmCenter = { x: w * 0.27, y: h * 0.54 };
+            speedCenter = { x: w * 0.73, y: h * 0.54 };
+        }
+        
+        // Draw Tachometer (Left on desktop)
+        if (!isMobile) {
+            this.drawTachometer(rpmCenter.x, rpmCenter.y, radius, physics, colors);
+        }
+        
+        // Draw Speedometer (Right on desktop, Center on mobile)
+        this.drawSpeedometer(speedCenter.x, speedCenter.y, radius, physics, colors, isMobile);
+        
+        // Draw Center Telemetry / HUD
+        if (!isMobile) {
+            this.drawCenterHUD(w * 0.5, h * 0.54, w * 0.18, h * 0.7, physics, colors);
+        }
+        
+        ctx.restore();
+    }
+    
+    drawSpeedometer(cx, cy, r, physics, colors, isMobile) {
+        const ctx = this.ctx;
+        const isMph = this.unit === 'mph';
+        const displaySpeed = isMph ? this.smoothSpeed * 0.621371 : this.smoothSpeed;
+        const maxScale = isMph ? 180 : 280;
+        
+        // Angle range: from 135 deg (bottom-left) to 405 deg (bottom-right), 270 degree span
+        const startAngle = Math.PI * 0.75;
+        const endAngle = Math.PI * 2.25;
+        const angleSpan = endAngle - startAngle;
+        
+        // Dial Background & Rim
+        this.drawDialBase(cx, cy, r, colors);
+        
+        // Draw illuminated active track
+        const currentFrac = Math.min(1.0, Math.max(0, displaySpeed / maxScale));
+        const activeAngle = startAngle + currentFrac * angleSpan;
+        
+        ctx.beginPath();
+        ctx.arc(cx, cy, r * 0.86, startAngle, activeAngle);
+        ctx.strokeStyle = colors.accent;
+        ctx.lineWidth = 6;
+        ctx.shadowColor = colors.accent;
+        ctx.shadowBlur = 12;
+        ctx.stroke();
+        ctx.shadowBlur = 0;
+        
+        // Major & Minor Ticks
+        const step = isMph ? 20 : 20;
+        const totalSteps = maxScale / step;
+        
+        ctx.font = `600 ${Math.round(r * 0.11)}px 'Segoe UI', system-ui, sans-serif`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        
+        for (let i = 0; i <= totalSteps; i++) {
+            const val = i * step;
+            const frac = val / maxScale;
+            const angle = startAngle + frac * angleSpan;
+            
+            const cosA = Math.cos(angle);
+            const sinA = Math.sin(angle);
+            
+            // Major tick mark
+            const tickOuter = r * 0.86;
+            const tickInner = r * 0.74;
+            
+            ctx.beginPath();
+            ctx.moveTo(cx + cosA * tickInner, cy + sinA * tickInner);
+            ctx.lineTo(cx + cosA * tickOuter, cy + sinA * tickOuter);
+            ctx.strokeStyle = colors.tickMajor;
+            ctx.lineWidth = 3;
+            ctx.stroke();
+            
+            // Numbers
+            const textR = r * 0.62;
+            ctx.fillStyle = colors.text;
+            ctx.fillText(val.toString(), cx + cosA * textR, cy + sinA * textR);
+            
+            // Minor ticks
+            if (i < totalSteps) {
+                for (let j = 1; j <= 3; j++) {
+                    const subFrac = frac + (j / 4) * (1 / totalSteps);
+                    const subAngle = startAngle + subFrac * angleSpan;
+                    const subCos = Math.cos(subAngle);
+                    const subSin = Math.sin(subAngle);
+                    
+                    ctx.beginPath();
+                    ctx.moveTo(cx + subCos * (r * 0.82), cy + subSin * (r * 0.82));
+                    ctx.lineTo(cx + subCos * tickOuter, cy + subSin * tickOuter);
+                    ctx.strokeStyle = colors.tickMinor;
+                    ctx.lineWidth = 1.5;
+                    ctx.stroke();
+                }
+            }
+        }
+        
+        // Needle
+        this.drawNeedle(cx, cy, r * 0.82, activeAngle, colors.accent, colors.needleGlow);
+        
+        // Center digital speed readout
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        
+        // Large speed number
+        const speedValueText = Math.round(displaySpeed).toString();
+        ctx.font = `800 ${Math.round(r * 0.32)}px 'Segoe UI', monospace, sans-serif`;
+        ctx.fillStyle = colors.text;
+        ctx.shadowColor = colors.accent;
+        ctx.shadowBlur = 8;
+        ctx.fillText(speedValueText, cx, cy + r * 0.22);
+        ctx.shadowBlur = 0;
+        
+        // Unit label
+        ctx.font = `700 ${Math.round(r * 0.10)}px 'Segoe UI', sans-serif`;
+        ctx.fillStyle = colors.accent;
+        ctx.fillText(this.unit.toUpperCase(), cx, cy + r * 0.40);
+        
+        // Cruise control badge if active
+        if (physics.cruiseControl) {
+            ctx.fillStyle = '#10b981';
+            ctx.font = `600 ${Math.round(r * 0.08)}px 'Segoe UI', sans-serif`;
+            ctx.fillText(`CRUISE ${Math.round(isMph ? physics.cruiseSpeed * 0.621371 : physics.cruiseSpeed)}`, cx, cy - r * 0.32);
+        }
+    }
+    
+    drawTachometer(cx, cy, r, physics, colors) {
+        const ctx = this.ctx;
+        const rpm = this.smoothRpm;
+        const maxRpm = 8000;
+        const redlineStart = 6500;
+        
+        const startAngle = Math.PI * 0.75;
+        const endAngle = Math.PI * 2.25;
+        const angleSpan = endAngle - startAngle;
+        
+        this.drawDialBase(cx, cy, r, colors);
+        
+        // Redline Arc Zone
+        const redlineFrac = redlineStart / maxRpm;
+        const redlineAngle = startAngle + redlineFrac * angleSpan;
+        ctx.beginPath();
+        ctx.arc(cx, cy, r * 0.86, redlineAngle, endAngle);
+        ctx.strokeStyle = colors.redline;
+        ctx.lineWidth = 6;
+        ctx.shadowColor = colors.redline;
+        ctx.shadowBlur = 10;
+        ctx.stroke();
+        ctx.shadowBlur = 0;
+        
+        // Active RPM track
+        const currentFrac = Math.min(1.0, Math.max(0, rpm / maxRpm));
+        const activeAngle = startAngle + currentFrac * angleSpan;
+        
+        ctx.beginPath();
+        ctx.arc(cx, cy, r * 0.86, startAngle, activeAngle);
+        ctx.strokeStyle = rpm >= redlineStart ? colors.redline : colors.accent;
+        ctx.lineWidth = 6;
+        ctx.shadowColor = rpm >= redlineStart ? colors.redline : colors.accent;
+        ctx.shadowBlur = 12;
+        ctx.stroke();
+        ctx.shadowBlur = 0;
+        
+        // Ticks (0 through 8)
+        ctx.font = `600 ${Math.round(r * 0.12)}px 'Segoe UI', system-ui, sans-serif`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        
+        for (let i = 0; i <= 8; i++) {
+            const frac = i / 8;
+            const angle = startAngle + frac * angleSpan;
+            const cosA = Math.cos(angle);
+            const sinA = Math.sin(angle);
+            
+            const isRed = i >= 6.5;
+            const tickOuter = r * 0.86;
+            const tickInner = r * 0.74;
+            
+            ctx.beginPath();
+            ctx.moveTo(cx + cosA * tickInner, cy + sinA * tickInner);
+            ctx.lineTo(cx + cosA * tickOuter, cy + sinA * tickOuter);
+            ctx.strokeStyle = isRed ? colors.redline : colors.tickMajor;
+            ctx.lineWidth = 3;
+            ctx.stroke();
+            
+            // Number label
+            const textR = r * 0.62;
+            ctx.fillStyle = isRed ? colors.redline : colors.text;
+            ctx.fillText(i.toString(), cx + cosA * textR, cy + sinA * textR);
+            
+            // Sub-ticks
+            if (i < 8) {
+                for (let j = 1; j <= 3; j++) {
+                    const subFrac = frac + (j / 4) * (1 / 8);
+                    const subAngle = startAngle + subFrac * angleSpan;
+                    const subCos = Math.cos(subAngle);
+                    const subSin = Math.sin(subAngle);
+                    
+                    ctx.beginPath();
+                    ctx.moveTo(cx + subCos * (r * 0.82), cy + subSin * (r * 0.82));
+                    ctx.lineTo(cx + subCos * tickOuter, cy + subSin * tickOuter);
+                    ctx.strokeStyle = (subFrac * maxRpm >= redlineStart) ? colors.redline : colors.tickMinor;
+                    ctx.lineWidth = 1.5;
+                    ctx.stroke();
+                }
+            }
+        }
+        
+        // Needle
+        const needleColor = rpm >= redlineStart ? colors.redline : colors.accent;
+        this.drawNeedle(cx, cy, r * 0.82, activeAngle, needleColor, colors.needleGlow);
+        
+        // Center Gear & RPM label
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        
+        // Gear display
+        ctx.font = `800 ${Math.round(r * 0.28)}px 'Segoe UI', monospace, sans-serif`;
+        ctx.fillStyle = colors.text;
+        const gearText = physics.gearMode === 'D' ? `${physics.gear}` : physics.gearMode;
+        ctx.fillText(gearText, cx, cy + r * 0.22);
+        
+        // Label
+        ctx.font = `600 ${Math.round(r * 0.09)}px 'Segoe UI', sans-serif`;
+        ctx.fillStyle = colors.accent;
+        ctx.fillText('RPM x 1000', cx, cy + r * 0.40);
+        
+        // Rev limiter warning blink
+        if (physics.revLimiterActive) {
+            ctx.fillStyle = colors.redline;
+            ctx.font = `700 ${Math.round(r * 0.08)}px 'Segoe UI', sans-serif`;
+            ctx.fillText('REV LIMIT', cx, cy - r * 0.32);
+        }
+    }
+    
+    drawDialBase(cx, cy, r, colors) {
+        const ctx = this.ctx;
+        
+        // Outer metallic rim
+        const gradRim = ctx.createRadialGradient(cx, cy, r * 0.92, cx, cy, r);
+        gradRim.addColorStop(0, colors.rimInner);
+        gradRim.addColorStop(0.85, colors.rimOuter);
+        gradRim.addColorStop(1, '#000000');
+        
+        ctx.beginPath();
+        ctx.arc(cx, cy, r, 0, Math.PI * 2);
+        ctx.fillStyle = gradRim;
+        ctx.fill();
+        
+        // Inner dial body
+        const gradBody = ctx.createRadialGradient(cx, cy, 0, cx, cy, r * 0.92);
+        gradBody.addColorStop(0, colors.dialBg);
+        gradBody.addColorStop(0.95, '#020408');
+        
+        ctx.beginPath();
+        ctx.arc(cx, cy, r * 0.92, 0, Math.PI * 2);
+        ctx.fillStyle = gradBody;
+        ctx.fill();
+        
+        // Arc Track background
+        ctx.beginPath();
+        ctx.arc(cx, cy, r * 0.86, Math.PI * 0.75, Math.PI * 2.25);
+        ctx.strokeStyle = colors.arcTrack;
+        ctx.lineWidth = 6;
+        ctx.stroke();
+    }
+    
+    drawNeedle(cx, cy, length, angle, color, glowColor) {
+        const ctx = this.ctx;
+        
+        ctx.save();
+        ctx.translate(cx, cy);
+        ctx.rotate(angle);
+        
+        // Needle glow
+        ctx.shadowColor = glowColor;
+        ctx.shadowBlur = 14;
+        
+        // Needle body (tapered)
+        ctx.beginPath();
+        ctx.moveTo(0, -3.5);
+        ctx.lineTo(length, 0);
+        ctx.lineTo(0, 3.5);
+        ctx.lineTo(-length * 0.18, 0);
+        ctx.closePath();
+        ctx.fillStyle = color;
+        ctx.fill();
+        
+        // Center hub cap
+        ctx.beginPath();
+        ctx.arc(0, 0, length * 0.16, 0, Math.PI * 2);
+        ctx.fillStyle = '#111827';
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 2.5;
+        ctx.fill();
+        ctx.stroke();
+        
+        // Inner hub center point
+        ctx.beginPath();
+        ctx.arc(0, 0, length * 0.05, 0, Math.PI * 2);
+        ctx.fillStyle = color;
+        ctx.fill();
+        
+        ctx.restore();
+    }
+    
+    drawCenterHUD(cx, cy, w, h, physics, colors) {
+        const ctx = this.ctx;
+        const mode = physics.getDriveMode();
+        
+        // HUD Background panel
+        ctx.fillStyle = colors.hudBg;
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
+        ctx.lineWidth = 1.5;
+        
+        const rw = w * 0.95;
+        const rh = h * 0.85;
+        const rx = cx - rw / 2;
+        const ry = cy - rh / 2;
+        
+        ctx.beginPath();
+        if (ctx.roundRect) {
+            ctx.roundRect(rx, ry, rw, rh, 14);
+        } else {
+            ctx.rect(rx, ry, rw, rh);
+        }
+        ctx.fill();
+        ctx.stroke();
+        
+        // Drive Mode Badge
+        ctx.fillStyle = mode.accentColor;
+        ctx.font = `700 13px 'Segoe UI', sans-serif`;
+        ctx.textAlign = 'center';
+        ctx.fillText(mode.name + ' MODE', cx, ry + 26);
+        
+        // Shift Mode Selector Display (P R N D)
+        const gearModes = ['P', 'R', 'N', 'D'];
+        const modeSpacing = rw / 5;
+        ctx.font = `700 14px 'Segoe UI', monospace`;
+        
+        gearModes.forEach((gm, idx) => {
+            const gx = rx + modeSpacing * (idx + 1);
+            const gy = ry + 56;
+            if (physics.gearMode === gm) {
+                ctx.fillStyle = colors.accent;
+                ctx.fillText(`[${gm}]`, gx, gy);
+            } else {
+                ctx.fillStyle = '#64748b';
+                ctx.fillText(gm, gx, gy);
+            }
+        });
+        
+        // G-Force Indicator Meter
+        ctx.fillStyle = colors.text;
+        ctx.font = `600 11px 'Segoe UI', sans-serif`;
+        ctx.fillText('LONGITUDINAL G', cx, ry + 88);
+        
+        const gVal = physics.gForce.toFixed(2);
+        ctx.font = `700 16px 'Segoe UI', monospace`;
+        ctx.fillStyle = colors.accent;
+        ctx.fillText(`${gVal > 0 ? '+' : ''}${gVal} G`, cx, ry + 110);
+        
+        // Throttle & Brake level mini-bars
+        const barWidth = rw * 0.7;
+        const barHeight = 6;
+        const barX = cx - barWidth / 2;
+        
+        // Throttle bar (Green/Cyan)
+        ctx.fillStyle = '#64748b';
+        ctx.font = `600 10px 'Segoe UI', sans-serif`;
+        ctx.textAlign = 'left';
+        ctx.fillText('THROTTLE', barX, ry + 134);
+        ctx.textAlign = 'right';
+        ctx.fillText(`${Math.round(physics.effectiveThrottle * 100)}%`, barX + barWidth, ry + 134);
+        
+        ctx.fillStyle = '#1e293b';
+        ctx.fillRect(barX, ry + 140, barWidth, barHeight);
+        ctx.fillStyle = colors.accent;
+        ctx.fillRect(barX, ry + 140, barWidth * physics.effectiveThrottle, barHeight);
+        
+        // Brake bar (Red)
+        ctx.textAlign = 'left';
+        ctx.fillStyle = '#64748b';
+        ctx.fillText('BRAKE', barX, ry + 162);
+        ctx.textAlign = 'right';
+        ctx.fillText(`${Math.round(physics.brake * 100)}%`, barX + barWidth, ry + 162);
+        
+        ctx.fillStyle = '#1e293b';
+        ctx.fillRect(barX, ry + 168, barWidth, barHeight);
+        ctx.fillStyle = colors.redline;
+        ctx.fillRect(barX, ry + 168, barWidth * physics.brake, barHeight);
+        
+        // Odometer & Trip
+        ctx.textAlign = 'center';
+        ctx.fillStyle = '#94a3b8';
+        ctx.font = `500 11px 'Segoe UI', monospace`;
+        ctx.fillText(`TRIP: ${physics.tripMeter.toFixed(1)} km`, cx, ry + rh - 30);
+        
+        ctx.fillStyle = colors.text;
+        ctx.font = `600 12px 'Segoe UI', monospace`;
+        ctx.fillText(`ODO: ${Math.floor(physics.odometer).toLocaleString()} km`, cx, ry + rh - 12);
+    }
+}
+
+if (typeof window !== 'undefined') {
+    window.GaugeCluster = GaugeCluster;
+}
+
+
+/**
+ * Main Application Orchestrator
+ * Connects vehicle physics, canvas gauge cluster, sound engine,
+ * and user interactions (pedals, keyboard, sliders, modes).
+ */
+
+document.addEventListener('DOMContentLoaded', () => {
+    // 1. Initialize Components
+    const canvas = document.getElementById('gaugeCanvas');
+    const physics = new VehiclePhysics();
+    const soundEngine = new SoundEngine();
+    const gaugeCluster = new GaugeCluster(canvas);
+
+    // 2. DOM Elements
+    const gasPedal = document.getElementById('gasPedal');
+    const brakePedal = document.getElementById('brakePedal');
+    const throttleSlider = document.getElementById('throttleSlider');
+    const throttleValDisplay = document.getElementById('throttleVal');
+    const soundBtn = document.getElementById('soundBtn');
+    const soundLabel = document.getElementById('soundLabel');
+    const cruiseBtn = document.getElementById('cruiseBtn');
+    const resetTripBtn = document.getElementById('resetTripBtn');
+
+    // Button groups
+    const driveModeButtons = document.querySelectorAll('#driveModeGroup .select-btn');
+    const unitButtons = document.querySelectorAll('#unitGroup .select-btn');
+    const themeButtons = document.querySelectorAll('#themeGroup .select-btn');
+    const gearButtons = document.querySelectorAll('.gear-btn');
+
+    // Input States
+    let isPedalGasActive = false;
+    let isKeyGasActive = false;
+    let isPedalBrakeActive = false;
+    let isKeyBrakeActive = false;
+    let sliderThrottle = 0;
+
+    // Helper: unlock audio on first interaction
+    const unlockAudio = () => {
+        if (!soundEngine.ctx) {
+            soundEngine.initAudio();
+        }
+    };
+
+    // Helper: refresh throttle based on inputs
+    const refreshThrottle = () => {
+        if (isPedalGasActive || isKeyGasActive) {
+            physics.throttle = 1.0;
+        } else {
+            physics.throttle = sliderThrottle;
+        }
+    };
+
+    // Helper: refresh brake based on inputs
+    const refreshBrake = () => {
+        if (isPedalBrakeActive || isKeyBrakeActive) {
+            physics.brake = 1.0;
+            if (physics.cruiseControl) {
+                physics.cruiseControl = false;
+                updateCruiseButtonUI();
+            }
+        } else {
+            physics.brake = 0.0;
+        }
+    };
+
+    // ==========================================
+    // Accelerator (Gas) Pedal Handlers
+    // ==========================================
+    const startGas = (e) => {
+        if (e) e.preventDefault();
+        unlockAudio();
+        isPedalGasActive = true;
+        gasPedal.classList.add('pressed');
+        refreshThrottle();
+    };
+
+    const stopGas = (e) => {
+        if (e) e.preventDefault();
+        isPedalGasActive = false;
+        gasPedal.classList.remove('pressed');
+        refreshThrottle();
+    };
+
+    // ==========================================
+    // Brake Pedal Handlers
+    // ==========================================
+    const startBrake = (e) => {
+        if (e) e.preventDefault();
+        unlockAudio();
+        isPedalBrakeActive = true;
+        brakePedal.classList.add('pressed');
+        refreshBrake();
+    };
+
+    const stopBrake = (e) => {
+        if (e) e.preventDefault();
+        isPedalBrakeActive = false;
+        brakePedal.classList.remove('pressed');
+        refreshBrake();
+    };
+
+    // Attach Pedal Listeners
+    gasPedal.addEventListener('mousedown', startGas);
+    gasPedal.addEventListener('touchstart', startGas, { passive: false });
+    gasPedal.addEventListener('touchend', stopGas, { passive: false });
+    gasPedal.addEventListener('touchcancel', stopGas, { passive: false });
+
+    brakePedal.addEventListener('mousedown', startBrake);
+    brakePedal.addEventListener('touchstart', startBrake, { passive: false });
+    brakePedal.addEventListener('touchend', stopBrake, { passive: false });
+    brakePedal.addEventListener('touchcancel', stopBrake, { passive: false });
+
+    // Global mouse up to ensure pedals release even if cursor leaves the pedal
+    window.addEventListener('mouseup', () => {
+        if (isPedalGasActive) stopGas();
+        if (isPedalBrakeActive) stopBrake();
+    });
+
+    // ==========================================
+    // Continuous Throttle Slider
+    // ==========================================
+    throttleSlider.addEventListener('input', (e) => {
+        unlockAudio();
+        sliderThrottle = parseFloat(e.target.value) / 100;
+        throttleValDisplay.textContent = `${Math.round(sliderThrottle * 100)}%`;
+        refreshThrottle();
+    });
+
+    // ==========================================
+    // Keyboard Controls
+    // ==========================================
+    window.addEventListener('keydown', (e) => {
+        if (e.repeat && (e.code === 'KeyC' || e.code === 'KeyM')) return;
+
+        switch (e.code) {
+            case 'Space':
+            case 'ArrowUp':
+            case 'KeyW':
+                e.preventDefault();
+                unlockAudio();
+                isKeyGasActive = true;
+                gasPedal.classList.add('pressed');
+                refreshThrottle();
+                break;
+
+            case 'ArrowDown':
+            case 'KeyS':
+                e.preventDefault();
+                unlockAudio();
+                isKeyBrakeActive = true;
+                brakePedal.classList.add('pressed');
+                refreshBrake();
+                break;
+
+            case 'KeyC':
+                e.preventDefault();
+                toggleCruise();
+                break;
+
+            case 'KeyM':
+                e.preventDefault();
+                toggleSound();
+                break;
+
+            case 'KeyP':
+                setTransmission('P');
+                break;
+            case 'KeyR':
+                setTransmission('R');
+                break;
+            case 'KeyN':
+                setTransmission('N');
+                break;
+            case 'KeyD':
+                setTransmission('D');
+                break;
+
+            case 'Digit1':
+                setDriveMode('eco');
+                break;
+            case 'Digit2':
+                setDriveMode('comfort');
+                break;
+            case 'Digit3':
+                setDriveMode('sport');
+                break;
+            case 'Digit4':
+                setDriveMode('track');
+                break;
+        }
+    });
+
+    window.addEventListener('keyup', (e) => {
+        switch (e.code) {
+            case 'Space':
+            case 'ArrowUp':
+            case 'KeyW':
+                e.preventDefault();
+                isKeyGasActive = false;
+                if (!isPedalGasActive) {
+                    gasPedal.classList.remove('pressed');
+                }
+                refreshThrottle();
+                break;
+
+            case 'ArrowDown':
+            case 'KeyS':
+                e.preventDefault();
+                isKeyBrakeActive = false;
+                if (!isPedalBrakeActive) {
+                    brakePedal.classList.remove('pressed');
+                }
+                refreshBrake();
+                break;
+        }
+    });
+
+    // ==========================================
+    // Transmission Controls
+    // ==========================================
+    const setTransmission = (gearMode) => {
+        physics.gearMode = gearMode;
+        if (gearMode !== 'D' && physics.cruiseControl) {
+            physics.cruiseControl = false;
+            updateCruiseButtonUI();
+        }
+        gearButtons.forEach(btn => {
+            btn.classList.toggle('active', btn.getAttribute('data-gear') === gearMode);
+        });
+    };
+
+    gearButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const gear = btn.getAttribute('data-gear');
+            setTransmission(gear);
+        });
+    });
+
+    // ==========================================
+    // Drive Mode Controls
+    // ==========================================
+    const setDriveMode = (modeKey) => {
+        physics.setDriveMode(modeKey);
+        driveModeButtons.forEach(b => {
+            b.classList.toggle('active', b.getAttribute('data-mode') === modeKey);
+        });
+    };
+
+    driveModeButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const mode = btn.getAttribute('data-mode');
+            setDriveMode(mode);
+        });
+    });
+
+    // ==========================================
+    // Units Selector (KM/H vs MPH)
+    // ==========================================
+    unitButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const unit = btn.getAttribute('data-unit');
+            gaugeCluster.setUnit(unit);
+            unitButtons.forEach(b => b.classList.toggle('active', b === btn));
+        });
+    });
+
+    // ==========================================
+    // Theme Selector
+    // ==========================================
+    themeButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const theme = btn.getAttribute('data-theme');
+            gaugeCluster.setTheme(theme);
+            themeButtons.forEach(b => b.classList.toggle('active', b === btn));
+        });
+    });
+
+    // ==========================================
+    // Cruise Control & Trip Reset
+    // ==========================================
+    const updateCruiseButtonUI = () => {
+        cruiseBtn.classList.toggle('active', physics.cruiseControl);
+    };
+
+    const toggleCruise = () => {
+        const isActive = physics.toggleCruiseControl();
+        updateCruiseButtonUI();
+    };
+
+    cruiseBtn.addEventListener('click', toggleCruise);
+
+    resetTripBtn.addEventListener('click', () => {
+        physics.resetTrip();
+    });
+
+    // ==========================================
+    // Sound FX Toggle
+    // ==========================================
+    const toggleSound = () => {
+        const isEnabled = soundEngine.toggle();
+        soundBtn.classList.toggle('active', isEnabled);
+        soundLabel.textContent = isEnabled ? 'Sound: ON' : 'Sound: OFF';
+    };
+
+    soundBtn.addEventListener('click', toggleSound);
+
+    // ==========================================
+    // Main 60fps Physics & Render Loop
+    // ==========================================
+    let lastTime = performance.now();
+
+    const loop = (currentTime) => {
+        const dt = Math.min((currentTime - lastTime) / 1000, 0.1);
+        lastTime = currentTime;
+
+        // 1. Update Physics
+        physics.update(dt);
+
+        // 2. Update Sound Synthesizer
+        soundEngine.update(physics);
+
+        // 3. Render Gauge Cluster
+        gaugeCluster.render(physics);
+
+        // 4. Sync UI states
+        updateCruiseButtonUI();
+
+        // Keep looping
+        requestAnimationFrame(loop);
+    };
+
+    // Kick off animation loop
+    requestAnimationFrame(loop);
+});
+
+    </script>
+</body>
+</html>

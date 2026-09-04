@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Supercar Instrument Cluster & Accelerator</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <!-- Header Navigation -->
+    <header class="top-nav">
+        <div class="brand">
+            <svg class="brand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polygon points="12 6 12 12 16 14"></polygon>
+            </svg>
+            <span class="brand-title">HyperDrive Cluster</span>
+        </div>
+
+        <div class="top-controls">
+            <!-- Drive Modes -->
+            <div class="select-group" id="driveModeGroup">
+                <button class="select-btn" data-mode="eco">ECO</button>
+                <button class="select-btn" data-mode="comfort">COMFORT</button>
+                <button class="select-btn active" data-mode="sport">SPORT</button>
+                <button class="select-btn" data-mode="track">TRACK</button>
+            </div>
+
+            <!-- Units Toggle -->
+            <div class="select-group" id="unitGroup">
+                <button class="select-btn active" data-unit="kmh">KM/H</button>
+                <button class="select-btn" data-unit="mph">MPH</button>
+            </div>
+
+            <!-- Theme Picker -->
+            <div class="select-group" id="themeGroup">
+                <button class="select-btn active" data-theme="neon">NEON</button>
+                <button class="select-btn" data-theme="classic">CLASSIC</button>
+                <button class="select-btn" data-theme="stealth">STEALTH</button>
+            </div>
+
+            <!-- Sound FX Toggle -->
+            <button class="btn" id="soundBtn" title="Toggle Engine Audio">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                    <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                </svg>
+                <span id="soundLabel">Sound: OFF</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Dashboard Container -->
+    <main class="dashboard-container">
+
+        <!-- Gauges Cluster Display -->
+        <div class="cluster-wrapper">
+            <canvas id="gaugeCanvas"></canvas>
+        </div>
+
+        <!-- Transmission Gear Mode Bar -->
+        <div class="gear-selector-bar">
+            <span class="gear-label">Transmission:</span>
+            <button class="gear-btn" data-gear="P">P</button>
+            <button class="gear-btn" data-gear="R">R</button>
+            <button class="gear-btn" data-gear="N">N</button>
+            <button class="gear-btn active" data-gear="D">D</button>
+        </div>
+
+        <!-- Cockpit Controls Area -->
+        <div class="cockpit-panel">
+            
+            <!-- Left: Throttle Slider -->
+            <div class="slider-control-card">
+                <div class="card-title">
+                    <span>Continuous Throttle</span>
+                    <span class="slider-val-badge" id="throttleVal">0%</span>
+                </div>
+                <div class="slider-container">
+                    <input type="range" min="0" max="100" value="0" class="throttle-slider" id="throttleSlider">
+                </div>
+                <span style="font-size: 0.72rem; color: var(--text-muted);">Hold gas pedal or drag slider to set steady throttle</span>
+            </div>
+
+            <!-- Center: 3D Interactive Pedals -->
+            <div class="pedals-assembly">
+                <!-- Brake Pedal -->
+                <div class="pedal-box">
+                    <span class="pedal-label">Brake</span>
+                    <div class="pedal pedal-brake" id="brakePedal" role="button" tabindex="0" title="Click & hold to brake">
+                        <div class="rubber-rib"></div>
+                        <div class="rubber-rib"></div>
+                        <div class="rubber-rib"></div>
+                        <div class="rubber-rib"></div>
+                    </div>
+                    <span class="pedal-key-hint">[S] or [↓]</span>
+                </div>
+
+                <!-- Accelerator / Gas Pedal -->
+                <div class="pedal-box">
+                    <span class="pedal-label" style="color: var(--accent-cyan);">Accelerator</span>
+                    <div class="pedal pedal-gas" id="gasPedal" role="button" tabindex="0" title="Click & hold to accelerate">
+                        <div class="rubber-dot-grid">
+                            <div class="rubber-dot"></div><div class="rubber-dot"></div>
+                            <div class="rubber-dot"></div><div class="rubber-dot"></div>
+                            <div class="rubber-dot"></div><div class="rubber-dot"></div>
+                            <div class="rubber-dot"></div><div class="rubber-dot"></div>
+                            <div class="rubber-dot"></div><div class="rubber-dot"></div>
+                        </div>
+                    </div>
+                    <span class="pedal-key-hint">[SPACE] or [W] or [↑]</span>
+                </div>
+            </div>
+
+            <!-- Right: Quick Actions -->
+            <div class="cockpit-actions">
+                <button class="btn" id="cruiseBtn" style="width: 100%; justify-content: center;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="8" x2="12" y2="12"></line>
+                        <line x1="12" y1="12" x2="16" y2="12"></line>
+                    </svg>
+                    <span>Cruise Control [C]</span>
+                </button>
+                <button class="btn" id="resetTripBtn" style="width: 100%; justify-content: center;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="1 4 1 10 7 10"></polyline>
+                        <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+                    </svg>
+                    <span>Reset Trip & Max</span>
+                </button>
+            </div>
+
+        </div>
+
+        <!-- Keyboard Controls Cheatsheet -->
+        <div class="guide-card">
+            <div class="guide-item">
+                <span class="guide-key">SPACE / W / ↑</span>
+                <span>Accelerate (Hold)</span>
+            </div>
+            <div class="guide-item">
+                <span class="guide-key">S / ↓</span>
+                <span>Brake</span>
+            </div>
+            <div class="guide-item">
+                <span class="guide-key">C</span>
+                <span>Cruise Lock</span>
+            </div>
+            <div class="guide-item">
+                <span class="guide-key">D / N / R / P</span>
+                <span>Shift Transmission</span>
+            </div>
+            <div class="guide-item">
+                <span class="guide-key">1 - 4</span>
+                <span>Drive Modes</span>
+            </div>
+            <div class="guide-item">
+                <span class="guide-key">M</span>
+                <span>Mute / Sound</span>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Core Scripts -->
+    <script src="physics.js"></script>
+    <script src="sound.js"></script>
+    <script src="gauge.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
